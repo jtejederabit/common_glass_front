@@ -127,6 +127,7 @@ onMounted(() => {
         :search-props="customerSearchProps"
         :action="true"
         search
+        pagination
         @toggle="toggleModal"
     >
       <template v-slot:not-found>
