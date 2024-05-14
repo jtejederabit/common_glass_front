@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import { ref, computed } from 'vue';
-import {arrowUp, arrowDown} from "../../assets/icons/icons.ts";
+import {arrowUp, arrowDown, chevronLeft, chevronRight} from "../../assets/icons/icons.ts";
 
 // Definició de les propietats del component
 // items: Array d'objectes que es mostraran a la taula
@@ -10,7 +10,8 @@ import {arrowUp, arrowDown} from "../../assets/icons/icons.ts";
 //      ]
 // searchProps: Array amb els noms de les propietats dels objectes que es poden cercar
 //      Exemple: ['givenName', 'familyName']
-// search: Indica si es mostra el camp per cercar
+// search: Indica si es mostra el camp per cercar. Per defecte: false
+// pagination: Indica si es mostra la paginació. Per defecte: false
 
 const props = withDefaults(
     defineProps<{
@@ -18,8 +19,10 @@ const props = withDefaults(
       columns: Record<string, any>[];
       searchProps?: string[];
       search?: boolean;
+      pagination?: boolean;
     }>(),
     {
+      pagination: false,
       search: false
     }
 );
@@ -27,12 +30,13 @@ const props = withDefaults(
 const search = ref<string>('');
 const sortColumn = ref<string>('');
 const sortDirection = ref<'asc' | 'desc'>('asc');
-
+const page = ref(1);
+const pageSize = ref(5);
 
 // Filtra els items segons el search value i els ordena segons la columna seleccionada
 // Només es pot cercar en les propietats indicades a searchProps i els valors han de ser string o number
 // Si la columna és sortable, es canvia la direcció de l'ordenació
-const filteredItems = computed(() => {
+const filterAndSortItems = computed(() => {
   let items = props.items;
 
   if (search.value && props.searchProps) {
@@ -66,6 +70,19 @@ const filteredItems = computed(() => {
   return items;
 });
 
+// Filtra els items segons la pàgina actual i el nombre de items per pàgina
+const filteredItems = computed(() => {
+  const startIndex = (page.value - 1) * pageSize.value;
+  const endIndex = startIndex + pageSize.value;
+  return filterAndSortItems.value.slice(startIndex, endIndex);
+});
+
+// Calcula el nombre total de pàgines
+const totalPages = computed(() => {
+  return Math.ceil(filterAndSortItems.value.length / pageSize.value)
+});
+
+
 // Canvia la direcció de l'ordenació si la columna ja està seleccionada
 const sort = (column: string) => {
   if (sortColumn.value === column) {
@@ -75,6 +92,13 @@ const sort = (column: string) => {
     sortDirection.value = 'asc';
   }
 };
+
+// Canvia la pàgina actual
+const changePage = (newPage: number) => {
+  if (newPage < 1 || newPage > totalPages.value) return;
+  page.value = newPage;
+};
+
 </script>
 
 <template>
@@ -112,6 +136,15 @@ const sort = (column: string) => {
       <slot name="not-found">
         No s'han trobat resultats
       </slot>
+    </div>
+    <div v-if="props.pagination" class="pagination">
+      <button @click="changePage(page - 1)" :disabled="page <= 1">
+        <span v-html="chevronLeft"></span>
+      </button>
+      <span>Page {{ page }} of {{ totalPages }}</span>
+      <button @click="changePage(page + 1)" :disabled="page >= totalPages">
+        <span v-html="chevronRight"></span>
+      </button>
     </div>
   </div>
 </template>
@@ -158,5 +191,10 @@ input {
   text-align: center;
   margin-top: 20px;
 }
-
+.pagination {
+  align-items: center;
+  display: flex;
+  justify-content: left;
+  gap: 10px;
+}
 </style>
