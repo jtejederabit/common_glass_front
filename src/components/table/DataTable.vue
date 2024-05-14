@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { ref, computed } from 'vue';
+import { ref, computed, watch } from 'vue';
 import {arrowUp, arrowDown} from "../../assets/icons/icons.ts";
 import Search from "./components/Search.vue";
 import Pagination from "./components/pagination.vue";
@@ -14,6 +14,9 @@ import Pagination from "./components/pagination.vue";
 //      Exemple: ['givenName', 'familyName']
 // search: Indica si es mostra el camp per cercar. Per defecte: false
 // pagination: Indica si es mostra la paginació. Per defecte: false
+// currentPage: Pàgina actual. Per defecte: 1
+//            Aquesta propietat s'utilitza per mantenir la pàgina actual quan es refresca la página o es vol compartir.
+//            S'ha de passar com a propietat i s'ha de gestionar des del component pare amb l'event updatePage
 
 const props = withDefaults(
     defineProps<{
@@ -22,6 +25,7 @@ const props = withDefaults(
       searchProps?: string[];
       search?: boolean;
       pagination?: boolean;
+      currentPage?: number;
     }>(),
     {
       pagination: false,
@@ -29,27 +33,29 @@ const props = withDefaults(
     }
 );
 
-const search = ref<string>('');
+const emit = defineEmits(['updateQuery']);
+
+const searchString = ref<string>('');
 const sortColumn = ref<string>('');
 const sortDirection = ref<'asc' | 'desc'>('asc');
-const page = ref(1);
+const page = ref(props.currentPage || 1);
 const pageSize = ref(5);
 
 // Filtra els items segons el search value i els ordena segons la columna seleccionada
 // Només es pot cercar en les propietats indicades a searchProps i els valors han de ser string o number
 // Si la columna és sortable, es canvia la direcció de l'ordenació
 const filterAndSortItems = computed(() => {
-  let items = props.items;
+  let items = [...props.items];
 
-  if (search.value && props.searchProps) {
+  if (searchString.value && props.searchProps) {
     items = items.filter(item => {
       return props.searchProps?.some(prop => {
         if (!item[prop]) {
           return false;
         } else if (typeof item[prop] === 'number') {
-          return item[prop].toString().includes(search.value);
+          return item[prop].toString().includes(searchString.value);
         } else if (typeof item[prop] === 'string') {
-          return item[prop].toLowerCase().includes(search.value.toLowerCase());
+          return item[prop].toLowerCase().includes(searchString.value.toLowerCase());
         }
         return false;
       });
@@ -96,16 +102,31 @@ const sort = (column: string) => {
 };
 
 // Canvia la pàgina actual
+// Si hi havia currentPage com a query param, propaga l'event updateQuery al parent  per actualitzar la query
 const changePage = (newPage: number) => {
   if (newPage < 1 || newPage > totalPages.value) return;
   page.value = newPage;
+  if(props.currentPage) updateQuery({currentPage: newPage});
 };
+
+const updateQuery = (query: Record<string, any>) => {
+  emit('updateQuery', query);
+};
+
+// Aquí es vigila si la pàgina actual és més gran que el nombre total de pàgines
+// Si és així, es posa la pàgina actual com a última pàgina i es propaga l'event updateQuery al parent
+watch([filterAndSortItems, searchString], () => {
+  if (page.value > totalPages.value && totalPages.value !== 0) {
+    page.value = totalPages.value;
+    updateQuery({ currentPage: page.value })
+  }
+}, { immediate: true });
 
 </script>
 
 <template>
   <div class="w-full">
-    <Search v-if="props.search" v-model="search" />
+    <Search v-if="props.search" v-model="searchString"/>
     <table class="w-full text-md  bg-white shadow-md rounded mb-4 min-w-full border-collapse">
       <thead>
       <tr>
@@ -139,6 +160,6 @@ const changePage = (newPage: number) => {
         No s'han trobat resultats
       </slot>
     </div>
-    <pagination :total-pages="totalPages" :page="page" @update-page="changePage"/>
+    <Pagination :total-pages="totalPages" :page="page" @update-page="changePage"/>
   </div>
 </template>
