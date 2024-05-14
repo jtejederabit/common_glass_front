@@ -6,71 +6,31 @@ const props = defineProps<{
 }>();
 
 const clickOutside = (event: MouseEvent) => {
-  if (!(event.target as HTMLElement).closest('.modal-content')) {
+  if (!(event.target as HTMLElement).closest('#modal-content')) {
     emit('toggle');
   }
 };
 
+const close = () => {
+  emit('toggle');
+};
 </script>
 
 <template>
-  <div v-if="props.visible" @click="clickOutside">
-    <div class="modal">
-      <div class="modal-content">
-        <div class="modal-header">
-          <span>
-            <slot name="header"></slot>
-          </span>
-          <span class="close" @click="emit('toggle')">&times;</span>
-        </div>
-        <div class="modal-body">
-          <slot name="body"></slot>
-        </div>
+  <div v-if="props.visible" @click="clickOutside" class="fixed inset-0 bg-black bg-opacity-40 flex justify-center items-center">
+    <div id="modal-content" class="bg-white p-5 rounded-none  w-full h-full flex flex-col overflow-hidden md:w-[700px] md:h-[500px] md:p-4 md:rounded-lg">
+      <div class=" flex justify-between items-center w-full">
+        <span>
+          <slot name="header"></slot>
+        </span>
+        <button class="text-gray-400 text-4xl font-bold cursor-pointer" @click="close">&times;</button>
+      </div>
+      <div class="overflow-x-auto">
+        <slot name="body"></slot>
       </div>
     </div>
   </div>
 </template>
 
 <style scoped>
-.modal {
-  width: 100%;
-  height: 100%;
-  position: fixed;
-  z-index: 1;
-  left: 0;
-  top: 0;
-  background-color: rgba(0, 0, 0, 0.4);
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  flex-direction: column;
-}
-
-.modal-content {
-  display: flex;
-  flex-direction: column;
-  background-color: white;
-  padding: 20px;
-  border-radius: 10px;
-  width: 700px;
-  height: 500px;
-}
-
-.close {
-  color: #aaa;
-  float: right;
-  font-size: 28px;
-  font-weight: bold;
-  cursor: pointer;
-}
-
-.modal-header {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  width: 100%;
-}
-.modal-body {
-  overflow-x: auto;
-}
 </style>

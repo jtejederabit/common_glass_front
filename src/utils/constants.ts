@@ -1,7 +1,7 @@
 export const customerColumns = [
     {key: 'givenName', label: 'Nom', sortable: true},
     {key: 'familyName1', label: 'Cognom', sortable: true},
-    {key: 'phone', label: 'Teléfon', sortable: true},
+    {key: 'phone', label: 'Telèfon', sortable: true},
     {key: 'email', label: 'Email', sortable: true},
     {key: 'docNum', label: 'Numero de document', sortable: true},
     {key: 'action', label: 'Acció', sortable: false}

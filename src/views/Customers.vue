@@ -13,6 +13,7 @@ const products = ref<IProduct[]>([]);
 const visible = ref<boolean>(false);
 const selectedCustomer = ref<ICustomer | undefined>();
 const loadingCustomerData = ref<boolean>(false);
+const loadingCustomerProducts = ref<boolean>(false);
 
 const customerTableData = computed(() => {
   return customers.value.map((customer) => {
@@ -44,21 +45,26 @@ const loadCustomerData = async () => {
 const loadCustomerProducts = async () => {
   if(!selectedCustomer.value) return;
   try{
+    loadingCustomerProducts.value = true;
     await getCustomerProducts(selectedCustomer.value.customerId).then((data) => {
       products.value = data;
     });
   } catch (error) {
     console.error(error);
+  } finally {
+    loadingCustomerProducts.value = false;
   }
 };
 
-const toggleModal = (customerId: string) => {
-  if(!customerId) {
+const toggleModal = (customerId?: string) => {
+  if (customerId) {
+    selectedCustomer.value = customers.value.find(customer => customer.customerId === customerId);
     loadCustomerProducts();
-    visible.value = !visible.value;
-    return;
   }
-  selectedCustomer.value = customers.value.find((customer) => customer.customerId === customerId);
+
+  if(products.value.length) {
+    products.value = [];
+  }
   visible.value = !visible.value;
 };
 
@@ -69,44 +75,41 @@ onMounted(() => {
 </script>
 
 <template>
-  <Modal
-      :visible="visible"
-      @toggle="toggleModal"
-  >
+  <Modal :visible="visible" @toggle="toggleModal">
     <template v-slot:header>
-      <div class="modal-header">
+      <div class="flex items-center gap-2">
         <span v-html="userIcon"></span>
-        <h2>
-          {{selectedCustomer?.givenName}}
+        <h2 class="text-2xl font-semibold">
+          {{ selectedCustomer?.givenName }}
         </h2>
       </div>
-
     </template>
+
     <template v-slot:body>
-      <div class="customer-info-container">
-        <div class="customer-info-item">
-          <label for="givenName">Nom:</label>
-          <span id="givenName" >{{selectedCustomer?.givenName}} </span>
+      <div class="flex flex-row justify-between gap-4">
+        <div class="flex-1 flex flex-col">
+          <label class="font-bold">Nom:</label>
+          <span>{{ selectedCustomer?.givenName }}</span>
 
-          <label for="email">Email:</label>
-          <span id="email" >{{selectedCustomer?.email}} </span>
+          <label class="font-bold">Email:</label>
+          <span>{{ selectedCustomer?.email }}</span>
 
-          <label for="docType">Tipus de document:</label>
-          <span id="docType" >{{selectedCustomer?.docType.toUpperCase()}} </span>
+          <label class="font-bold">Tipus de document:</label>
+          <span>{{ selectedCustomer?.docType.toUpperCase() }}</span>
         </div>
-        <div class="customer-info-item">
-          <label for="familyName">Cognom:</label>
-          <span id="familyName" >{{selectedCustomer?.familyName1}} </span>
+        <div class="flex-1 flex flex-col">
+          <label class="font-bold">Cognom:</label>
+          <span>{{ selectedCustomer?.familyName1 }}</span>
 
-          <label for="phone">Teléfon:</label>
-          <span id="phone" >{{selectedCustomer?.phone}} </span>
+          <label class="font-bold">Telèfon:</label>
+          <span>{{ selectedCustomer?.phone }}</span>
 
-          <label for="docNum">Numero de document:</label>
-          <span id="docNum" >{{selectedCustomer?.docNum}} </span>
+          <label class="font-bold">Numero de document:</label>
+          <span>{{ selectedCustomer?.docNum }}</span>
         </div>
       </div>
-      <hr/>
-      <span style="font-weight: bold;">Productes contractats</span>
+      <hr class="my-4 border-gray-300" />
+      <span class="font-bold">Productes contractats</span>
       <DataTable
           :items="products"
           :columns="productColumns"
@@ -114,13 +117,14 @@ onMounted(() => {
           search
       >
         <template v-slot:not-found>
-          <p>No s'han trobat productes</p>
+          <p>{{ loadingCustomerProducts ? 'Carregant dades...' : 'No s\'han trobat productes' }}</p>
         </template>
       </DataTable>
     </template>
   </Modal>
-  <div class="customer-container">
-    <h1>Clients</h1>
+
+  <div class="w-4/5 p-5 mx-auto">
+    <h1 class="text-3xl font-bold mb-5">Clients</h1>
     <DataTable
         :items="customerTableData"
         :columns="customerColumns"
@@ -131,43 +135,12 @@ onMounted(() => {
         @toggle="toggleModal"
     >
       <template v-slot:not-found>
-        <p>{{ loadingCustomerData ? 'Carregant dades...' : 'No s\'han trobat clients'}}</p>
+        <p>{{ loadingCustomerData ? 'Carregant dades...' : 'No s\'han trobat clients' }}</p>
       </template>
     </DataTable>
   </div>
-
 </template>
 
 <style scoped>
-.customer-container {
-  align-items: center;
-  padding: 20px;
-  width: 80%;
-}
-.customer-info-container {
-  display: flex;
-  flex-direction: row;
-  justify-content: space-between;
-  gap: 20px;
-}
-.customer-info-item {
-  width: 50%;
-  display: flex;
-  flex-direction: column;
-}
-label {
-  font-weight: bold;
-}
-hr {
-  height: 2px;
-  background-color: #aaaaaa;
-  border: none;
-  margin: 20px 0;
-}
-.modal-header {
-  display: flex;
-  flex-direction: row;
-  align-items: center;
-  gap: 10px;
-}
+
 </style>
