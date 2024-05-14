@@ -1,6 +1,8 @@
 <script setup lang="ts">
 import { ref, computed } from 'vue';
-import {arrowUp, arrowDown, chevronLeft, chevronRight} from "../../assets/icons/icons.ts";
+import {arrowUp, arrowDown} from "../../assets/icons/icons.ts";
+import Search from "./components/Search.vue";
+import Pagination from "./components/pagination.vue";
 
 // Definició de les propietats del component
 // items: Array d'objectes que es mostraran a la taula
@@ -102,99 +104,41 @@ const changePage = (newPage: number) => {
 </script>
 
 <template>
-  <div class="dataTable">
-    <input v-if="props.search" type="text" placeholder="Cercar..." v-model="search" />
-    <table style="width: 100%;">
+  <div class="w-full">
+    <Search v-if="props.search" v-model="search" />
+    <table class="w-full text-md  bg-white shadow-md rounded mb-4 min-w-full border-collapse">
       <thead>
       <tr>
         <th
             v-for="column in props.columns"
             :key="column.key"
-            style="width: 20%;"
+            class="w-1/5 p-2.5 bg-gray-200 border-b text-left"
             @click="column.sortable && sort(column.key)"
         >
           {{ column.label }}
-          <span v-if="column.sortable && sortColumn === column.key">
-            <span v-html="sortDirection === 'asc' ? arrowUp : arrowDown"></span>
-          </span>
+          <span v-if="column.sortable && sortColumn === column.key" v-html="sortDirection === 'asc' ? arrowUp : arrowDown"></span>
         </th>
       </tr>
       </thead>
       <tbody>
       <tr v-for="item in filteredItems" :key="item._id">
-        <td v-for="prop in props.searchProps" :key="prop" class="item-td">{{ item[prop] }}</td>
-        <td v-if="item.hasOwnProperty('action')" class="action-button">
+        <td v-for="prop in props.searchProps" :key="prop" class="p-2.5">
+          {{ item[prop] }}
+        </td>
+        <td v-if="item.hasOwnProperty('action')" class="text-center p-2.5">
           <button @click="item.action.action">
-            <span v-if="!item.action.actionIcon">{{item.action.actionText}}</span>
+            <span v-if="!item.action.actionIcon">{{ item.action.actionText }}</span>
             <span v-else v-html="item.action.actionIcon"></span>
           </button>
         </td>
       </tr>
       </tbody>
     </table>
-    <div v-if="!filteredItems.length" class="not-found">
+    <div v-if="!filteredItems.length" class="mt-5 text-center">
       <slot name="not-found">
         No s'han trobat resultats
       </slot>
     </div>
-    <div v-if="props.pagination" class="pagination">
-      <button @click="changePage(page - 1)" :disabled="page <= 1">
-        <span v-html="chevronLeft"></span>
-      </button>
-      <span>Page {{ page }} of {{ totalPages }}</span>
-      <button @click="changePage(page + 1)" :disabled="page >= totalPages">
-        <span v-html="chevronRight"></span>
-      </button>
-    </div>
+    <pagination :total-pages="totalPages" :page="page" @update-page="changePage"/>
   </div>
 </template>
-
-<style scoped>
-.dataTable {
-  max-width: 900px;
-  min-width: 100%;
-  width: 100%;
-  margin: 0 auto;
-  height: auto;
-}
-
-table {
-  width: 100%;
-  min-width: 100%;
-  border-collapse: collapse;
-}
-th {
-  background-color: #f2f2f2;
-}
-td,
-th {
-  border: 1px solid rgba(128, 128, 128, 0.29);
-}
-tr:nth-child(even) {
-  background-color: #f2f2f2;
-}
-input {
-  width: 50%;
-  padding: 10px;
-  margin: 10px 0;
-  border: 1px solid rgba(128, 128, 128, 0.29);
-  border-radius: 5px;
-}
-.action-button {
-  text-align: center;
-  padding: 0;
-}
-.item-td {
-  padding: 10px;
-}
-.not-found {
-  text-align: center;
-  margin-top: 20px;
-}
-.pagination {
-  align-items: center;
-  display: flex;
-  justify-content: left;
-  gap: 10px;
-}
-</style>
