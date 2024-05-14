@@ -6,6 +6,6 @@ export const getCustomers = async () => {
     const { data } = await instance.get("/customers");
     return data as ICustomer[];
   } catch (error) {
-    return [];
+    throw new Error("Error al obtenir els clients");
   }
 };
