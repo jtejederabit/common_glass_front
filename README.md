@@ -1,9 +1,69 @@
-# Vue 3 + TypeScript + Vite
+# Frontend Coding Test
 
-This template should help get you started developing with Vue 3 and TypeScript in Vite. The template uses Vue 3 `<script setup>` SFCs, check out the [script setup docs](https://v3.vuejs.org/api/sfc-script-setup.html#sfc-script-setup) to learn more.
+Coding test - Vue 3 + TypeScript + Vite + Vue Router + Tailwind CSS
 
-## Recommended Setup
+<img src="https://skillicons.dev/icons?i=vue,typescript,vite,tailwindcss" />
 
-- [VS Code](https://code.visualstudio.com/) + [Vue - Official](https://marketplace.visualstudio.com/items?itemName=Vue.volar) (previously Volar) and disable Vetur
 
-- Use [vue-tsc](https://github.com/vuejs/language-tools/tree/master/packages/tsc) for performing the same type checking from the command line, or for generating d.ts files for SFCs.
+
+:computer: [Live Demo](https://common-glass-front.vercel.app/)
+
+![parlem-coding-test-v.gif](parlem-coding-test-v.gif)
+
+
+## Llibreries addicionals
+
+- Vue Router - Per a la gestió de les rutes
+- Tailwind CSS - Per a la gestió de l'estil de la web
+- Axios - Per a la gestió de les crides a l'API
+
+## Notes & Features
+
+- Components abstractes per a una millor reutilització
+- Funcionalitats addicionals com la paginació i la cerca dins la taula
+- Estat de la paginació gestionat a la URL amb query params
+
+
+## Dev Notes
+Degut a la senzillesa de la tasca, he optat per utilitzar Vue 3 amb TypeScript i Vite per a la creació de la solució. He afegit Vue Router per a la gestió de les rutes i Tailwind CSS per a l'estil de la web. He optat per utilitzar Axios per a la gestió de les crides a l'API.
+No he utilitzat cap State Management com Vuex o Pinia ja que no era necessari per a la tasca.
+
+## Arrencar el projecte en local
+
+Clonar el projecte
+
+```bash
+  git clone https://github.com/jtejederabit/common_glass_front
+```
+
+Anar al directori del projecte
+
+```bash
+  cd common_glass_front
+```
+
+Instal·lar les dependències
+
+```bash
+  npm install
+```
+
+Iniciar el servidor en mode de desenvolupament
+
+```bash
+  npm run dev
+```
+
+Construir el projecte
+
+```bash
+  npm run build
+```
+
+## Base URL
+
+In Dev mode
+
+```bash
+  http://localhost:5173
+```
