@@ -8,7 +8,6 @@ const instance: AxiosInstance = axios.create({
 instance.interceptors.response.use(
   (response) => response,
   async (error) => {
-    console.log("Error de petició: ", error)
     return Promise.reject(error);
   }
 );

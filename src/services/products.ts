@@ -6,6 +6,6 @@ export const getCustomerProducts = async (customerId: string) => {
     const { data } = await instance.get(`/products?customerId=${customerId}`);
     return data as IProduct[];
   } catch (error) {
-    return [];
+    throw new Error("Error al obtenir els productes");
   }
 };
