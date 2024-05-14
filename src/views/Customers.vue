@@ -75,7 +75,7 @@ const toggleModal = (customerId?: string) => {
 // En aquesta vista actualitzem la query de la ruta amb la currentPage
 const updateQuery = (query: Record<any, any>) => {
   router.push({
-    name: 'home', // Ensure this matches the name of the route
+    name: 'home',
     query: { ...route.query, ...query }
   })
 };
