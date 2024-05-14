@@ -131,18 +131,22 @@ watch([filterAndSortItems, searchString], () => {
       <thead>
       <tr>
         <th
-            v-for="column in props.columns"
+            v-for="(column, index) in props.columns"
             :key="column.key"
-            class="w-1/5 p-2.5 bg-gray-200 border-b text-left"
+            class="p-2.5 bg-gray-200 border-b text-left"
             @click="column.sortable && sort(column.key)"
+            :class="{'rounded-tl-lg': index === 0, 'rounded-tr-lg': index === props.columns.length - 1}"
         >
-          {{ column.label }}
-          <span v-if="column.sortable && sortColumn === column.key" v-html="sortDirection === 'asc' ? arrowUp : arrowDown"></span>
+          <div class="flex justify-items-start w-auto content-center gap-1">
+            {{ column.label }}
+            <span v-if="column.sortable && sortColumn === column.key" v-html="sortDirection === 'asc' ? arrowUp : arrowDown"></span>
+          </div>
+
         </th>
       </tr>
       </thead>
       <tbody>
-      <tr v-for="item in filteredItems" :key="item._id">
+      <tr v-for="(item, index) in filteredItems" :key="item._id" class="hover:bg-blue-50" :class="{'bg-gray-100': index % 2 === 0}">
         <td v-for="prop in props.searchProps" :key="prop" class="p-2.5">
           {{ item[prop] }}
         </td>
