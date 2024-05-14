@@ -1,7 +1,7 @@
 import axios, { AxiosInstance } from 'axios';
 
 const instance: AxiosInstance = axios.create({
-  baseURL: 'https://common-glass-server.vercel.app/api',
+  baseURL: import.meta.env.VITE_API_URL as string,
 });
 
 
