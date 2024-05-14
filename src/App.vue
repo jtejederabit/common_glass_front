@@ -1,9 +1,9 @@
 <script setup lang="ts">
-import Customers from "./views/Customers.vue";
+import { RouterView } from 'vue-router';
 </script>
 
 <template>
-  <Customers />
+  <RouterView />
 </template>
 
 <style scoped>

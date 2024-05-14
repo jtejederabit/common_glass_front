@@ -1,5 +1,6 @@
 <script setup lang="ts">
 import {onMounted, ref, computed} from "vue";
+import {useRoute, useRouter} from "vue-router";
 import {getCustomers} from "../services/customers.ts";
 import {getCustomerProducts} from "../services/products.ts";
 import {customerColumns, customerSearchProps, productColumns, productSearchProps} from "../utils/constants.ts";
@@ -7,6 +8,9 @@ import {ICustomer, IProduct} from "../utils/types.ts";
 import {externalLink, userIcon} from "../assets/icons/icons.ts";
 import Modal from "../components/modal/modal.vue";
 import DataTable from "../components/table/DataTable.vue";
+
+const route = useRoute();
+const router = useRouter();
 
 const customers = ref<ICustomer[]>([]);
 const products = ref<IProduct[]>([]);
@@ -66,6 +70,14 @@ const toggleModal = (customerId?: string) => {
     products.value = [];
   }
   visible.value = !visible.value;
+};
+
+// En aquesta vista actualitzem la query de la ruta amb la currentPage
+const updateQuery = (query: Record<any, any>) => {
+  router.push({
+    name: 'home', // Ensure this matches the name of the route
+    query: { ...route.query, ...query }
+  })
 };
 
 onMounted(() => {
@@ -130,9 +142,11 @@ onMounted(() => {
         :columns="customerColumns"
         :search-props="customerSearchProps"
         :action="true"
+        :current-page="Number(route.query.currentPage)"
         search
         pagination
         @toggle="toggleModal"
+        @update-query="updateQuery"
     >
       <template v-slot:not-found>
         <p>{{ loadingCustomerData ? 'Carregant dades...' : 'No s\'han trobat clients' }}</p>
