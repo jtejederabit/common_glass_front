@@ -127,7 +127,7 @@ watch([filterAndSortItems, searchString], () => {
 <template>
   <div class="w-full overflow-x-auto">
     <Search v-if="props.search" v-model="searchString"/>
-    <div class="overflow-x-auto max-h-[calc(100vh-200px)] min-h-[295px]">
+    <div class="overflow-x-auto max-h-[calc(100vh-200px)]">
       <table class="w-full text-md bg-white shadow-md rounded mb-4 min-w-full border-collapse">
         <thead>
         <tr>
