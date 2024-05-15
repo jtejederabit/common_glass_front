@@ -17,7 +17,7 @@ const close = () => {
 </script>
 
 <template>
-  <div v-if="props.visible" @click="clickOutside" class="fixed inset-0 bg-black bg-opacity-40 flex justify-center items-center">
+  <div v-if="props.visible" @click="clickOutside" class="fixed inset-0 bg-black bg-opacity-40 flex justify-center items-center z-10">
     <div id="modal-content" class="bg-white p-5 rounded-none  w-full h-full flex flex-col overflow-hidden md:w-[700px] md:h-[500px] md:p-4 md:rounded-lg">
       <div class=" flex justify-between items-center w-full">
         <span>

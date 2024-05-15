@@ -125,40 +125,42 @@ watch([filterAndSortItems, searchString], () => {
 </script>
 
 <template>
-  <div class="w-full">
+  <div class="w-full overflow-x-auto">
     <Search v-if="props.search" v-model="searchString"/>
-    <table class="w-full text-md  bg-white shadow-md rounded mb-4 min-w-full border-collapse">
-      <thead>
-      <tr>
-        <th
-            v-for="(column, index) in props.columns"
-            :key="column.key"
-            class="p-2.5 bg-gray-200 border-b text-left"
-            @click="column.sortable && sort(column.key)"
-            :class="{'rounded-tl-lg': index === 0, 'rounded-tr-lg': index === props.columns.length - 1}"
-        >
-          <div class="flex justify-items-start w-auto content-center gap-1">
-            {{ column.label }}
-            <span v-if="column.sortable && sortColumn === column.key" v-html="sortDirection === 'asc' ? arrowUp : arrowDown"></span>
-          </div>
+    <div class="overflow-x-auto max-h-[calc(100vh-200px)] min-h-[295px]">
+      <table class="w-full text-md bg-white shadow-md rounded mb-4 min-w-full border-collapse">
+        <thead>
+        <tr>
+          <th
+              v-for="(column, index) in props.columns"
+              :key="column.key"
+              class="p-2.5 bg-gray-200 border-b text-left"
+              @click="column.sortable && sort(column.key)"
+              :class="{'rounded-tl-lg': index === 0, 'rounded-tr-lg': index === props.columns.length - 1}"
+          >
+            <div class="flex justify-items-start w-auto content-center gap-1">
+              {{ column.label }}
+              <span v-if="column.sortable && sortColumn === column.key" v-html="sortDirection === 'asc' ? arrowUp : arrowDown"></span>
+            </div>
 
-        </th>
-      </tr>
-      </thead>
-      <tbody>
-      <tr v-for="(item, index) in filteredItems" :key="item._id" class="hover:bg-blue-50" :class="{'bg-gray-100': index % 2 === 0}">
-        <td v-for="prop in props.searchProps" :key="prop" class="p-2.5">
-          {{ item[prop] }}
-        </td>
-        <td v-if="item.hasOwnProperty('action')" class="text-center p-2.5">
-          <button @click="item.action.action">
-            <span v-if="!item.action.actionIcon">{{ item.action.actionText }}</span>
-            <span v-else v-html="item.action.actionIcon"></span>
-          </button>
-        </td>
-      </tr>
-      </tbody>
-    </table>
+          </th>
+        </tr>
+        </thead>
+        <tbody>
+        <tr v-for="(item, index) in filteredItems" :key="item._id" class="hover:bg-blue-50" :class="{'bg-gray-100': index % 2 === 0}">
+          <td v-for="prop in props.searchProps" :key="prop" class="p-2.5">
+            {{ item[prop] }}
+          </td>
+          <td v-if="item.hasOwnProperty('action')" class="text-center p-2.5">
+            <button @click="item.action.action">
+              <span v-if="!item.action.actionIcon">{{ item.action.actionText }}</span>
+              <span v-else v-html="item.action.actionIcon"></span>
+            </button>
+          </td>
+        </tr>
+        </tbody>
+      </table>
+    </div>
     <div v-if="!filteredItems.length" class="mt-5 text-center">
       <slot name="not-found">
         No s'han trobat resultats

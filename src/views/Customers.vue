@@ -99,8 +99,8 @@ onMounted(() => {
     </template>
 
     <template v-slot:body>
-      <div class="flex flex-row justify-between gap-4">
-        <div class="flex-1 flex flex-col">
+      <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+        <div class="flex flex-col">
           <label class="font-bold">Nom:</label>
           <span>{{ selectedCustomer?.givenName }}</span>
 
@@ -110,7 +110,7 @@ onMounted(() => {
           <label class="font-bold">Tipus de document:</label>
           <span>{{ selectedCustomer?.docType.toUpperCase() }}</span>
         </div>
-        <div class="flex-1 flex flex-col">
+        <div class="flex flex-col">
           <label class="font-bold">Cognom:</label>
           <span>{{ selectedCustomer?.familyName1 }}</span>
 
@@ -136,35 +136,36 @@ onMounted(() => {
     </template>
   </Modal>
 
-  <div class="w-4/5 p-5 mx-auto">
-    <h1 class="text-3xl font-bold mb-5">Clients</h1>
-    <DataTable
-        :items="customerTableData"
-        :columns="customerColumns"
-        :search-props="customerSearchProps"
-        :action="true"
-        :current-page="Number(route.query.currentPage)"
-        search
-        pagination
-        @toggle="toggleModal"
-        @update-query="updateQuery"
-    >
-      <template v-slot:not-found>
-        <p>{{ loadingCustomerData ? 'Carregant dades...' : 'No s\'han trobat clients' }}</p>
-      </template>
-    </DataTable>
-    <div v-if="errorAlert" class="flex justify-center items-center m-1 font-medium py-1 px-2 rounded-md text-red-700 bg-red-100 border border-red-300 mt-5">
-      <div slot="avatar">
-        <svg xmlns="http://www.w3.org/2000/svg" width="100%" height="100%" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather feather-alert-octagon w-5 h-5 mx-2">
-          <polygon points="7.86 2 16.14 2 22 7.86 22 16.14 16.14 22 7.86 22 2 16.14 2 7.86 7.86 2"></polygon>
-          <line x1="12" y1="8" x2="12" y2="12"></line>
-          <line x1="12" y1="16" x2="12.01" y2="16"></line>
-        </svg>
+  <div class="w-full min-h-screen flex flex-col items-center justify-center p-5">
+    <div class="w-full max-w-4xl p-5 mx-auto bg-white md:shadow-md md:rounded-md min-h-[493px]">
+      <h1 class="text-3xl font-bold mb-5">Clients</h1>
+      <DataTable
+          :items="customerTableData"
+          :columns="customerColumns"
+          :search-props="customerSearchProps"
+          :action="true"
+          :current-page="Number(route.query.currentPage)"
+          search
+          pagination
+          @toggle="toggleModal"
+          @update-query="updateQuery"
+      >
+        <template v-slot:not-found>
+          <p>{{ loadingCustomerData ? 'Carregant dades...' : 'No s\'han trobat clients' }}</p>
+        </template>
+      </DataTable>
+      <div v-if="errorAlert" class="flex justify-center items-center m-1 font-medium py-1 px-2 rounded-md text-red-700 bg-red-100 border border-red-300 mt-5">
+        <div slot="avatar">
+          <svg xmlns="http://www.w3.org/2000/svg" width="100%" height="100%" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather feather-alert-octagon w-5 h-5 mx-2">
+            <polygon points="7.86 2 16.14 2 22 7.86 22 16.14 16.14 22 7.86 22 2 16.14 2 7.86 7.86 2"></polygon>
+            <line x1="12" y1="8" x2="12" y2="12"></line>
+            <line x1="12" y1="16" x2="12.01" y2="16"></line>
+          </svg>
+        </div>
+        <div class="text-xl font-normal  max-w-full flex-initial">
+          Hi ha hagut un error al carregar les dades. Torna a intentar-ho.
+        </div>
       </div>
-      <div class="text-xl font-normal  max-w-full flex-initial">
-        Hi ha hagut un error al carregar les dades. Torna a intentar-ho.
-      </div>
-
     </div>
   </div>
 </template>
